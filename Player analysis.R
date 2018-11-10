@@ -6,10 +6,19 @@ graphics.off() # close all plots
 # install.packages("ggExtra")
 # install.packages("distrom")
 # install.packages("BBmisc")
+# install.packages("whisker")
+# install.packages("fpc")
+# install.packages("factoextra")
+# install.packages("cluster")
+# install.packages("dplyr")
+library(dplyr)
+library(cluster)
+library(factoextra)
+library(whisker)
+library(fpc)
 library(ggplot2)
 library(readr)
 library(datasets)
-library(ggplot2)
 library(corrplot)
 library(stats)
 library(ggrepel)
@@ -44,16 +53,17 @@ extra$Player[!(extra$Player %in% data$Player)]
 data<-merge(data,extra); #merging datasets
 data<- data[c(1,3:49,54:57,62)] #removing redundant columns
 
+#Fature extraction
 data$MPG<-data$MP/data$G;
 data$A2TO<-data$AST/data$TOV
 
 data[is.na(data)] <- 0 #removing null values
-cutoff<-28.5
+cutoff<-28.5 #Selecting threshold for subsetting
 
-newdata <- subset(data, MPG >=cutoff );
+newdata <- subset(data, MPG >=cutoff ); #subsetting data
 impdata<- newdata[c(9:55)];
-# impdata<- newdata[c(8:20,23,26,28,30:33, 36, 39:41, 45, 49:53,55)]; #offense
-# impdata<- newdata[c(21,24,25,27,34,37,38,42,46)]; #defense
+# impdata<- newdata[c(8:20,23,26,28,30:33, 36, 39:41, 45, 49:53,55)]; #offense features
+# impdata<- newdata[c(21,24,25,27,34,37,38,42,46)]; #defense features
 impdata <- normalize(impdata, method= "standardize") #normalizing data
 
 # o=corrplot(cor(impdata),method='number')
@@ -78,20 +88,15 @@ ggplot(dataFrame,aes(dataFrame$X1, dataFrame$X2)) +
   geom_point(data=newdata,aes(col =Pos, size= VORP))+
   geom_text_repel(data=newdata, aes(label=Player), size=3+newdata$VORP/max(newdata$VORP))
 
+#Plot without repels
   # ggplot(dataFrame,aes(dataFrame$X1, dataFrame$X2)) +
 #   geom_point(data=newdata,aes(col =Pos, size= PER/max(PER)))+
 #   labs(x="PC1",y="PC2")+
 #   geom_text(data=newdata, aes(label=Player),hjust=0,
 #               vjust=0, size=2+newdata$PER/max(newdata$PER))
 
-# unsupervised learning ---------------------------------------------------
+# k-means clustering ---------------------------------------------------
 
-# install.packages("factoextra")
-# install.packages("cluster")
-# install.packages("dplyr")
-library(dplyr)
-library(cluster)
-library(factoextra)
 row.names(impdata) <- newdata$Player #Replacing index numbers with player names
 
 # Clarifying distance measures
@@ -99,7 +104,7 @@ res.dist <- get_dist(impdata, stand = TRUE, method = "euclidean")
 fviz_dist(res.dist, 
           gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
 
-#Determining optimal clusters
+#Determining optimal clusters through different methods
 fviz_nbclust(impdata, kmeans, method = "wss")
 fviz_nbclust(impdata, kmeans, method = "gap_stat")
 fviz_nbclust(impdata, kmeans, method = "silhouette")
@@ -114,13 +119,8 @@ Clusters=data.frame(sort(km.res$cluster));
 
 
 # hierarchial clustering --------------------------------------------------
-# install.packages("whisker")
-# install.packages("fpc")
-library(whisker)
-library(fpc)
 
-# Hierarchical clustering using Ward's method
-res.hc <- hclust(res.dist, method = "ward.D2" )
+res.hc <- hclust(res.dist, method = "ward.D2" )# Hierarchical clustering using Ward's method
 
 # Visualize using factoextra
 # Cut in 8 groups and color by groups
