@@ -127,7 +127,6 @@ Clusters=data.frame(sort(km.res$cluster));
 
 # hierarchial clustering --------------------------------------------------
 
-# Hierarchical clustering using Ward's method
 res.hc <- hclust(res.dist, method = "ward.D2" )
 
 # Visualize using factoextra
