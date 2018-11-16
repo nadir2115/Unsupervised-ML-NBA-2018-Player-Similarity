@@ -19,12 +19,16 @@ library(stats)
 library(ggrepel)
 library(textir) 
 library(BBmisc)
+library(rstudioapi) # load it
+
+# set directory to R script folder
+current_path <- getActiveDocumentContext()$path 
+setwd(dirname(current_path ))
 
 # load data ---------------------------------------------------------------
-
-traditionalStats<-read.csv("C:/Users/nadir/Documents/Machine Learning/NBA/36 minutes.csv")
-advancedStats<- read.csv("C:/Users/nadir/Documents/Machine Learning/NBA/advanced.csv")
-miscStats<- read.csv("C:/Users/nadir/Documents/Machine Learning/NBA/extra.csv")
+traditionalStats<-read.csv("36 minutes.csv")
+advancedStats<- read.csv("advanced.csv")
+miscStats<- read.csv("extra.csv")
 
 # Data pre-processing -----------------------------------------------------
 
