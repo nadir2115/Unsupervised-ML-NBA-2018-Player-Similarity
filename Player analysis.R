@@ -19,7 +19,7 @@ library(stats)
 library(ggrepel)
 library(textir) 
 library(BBmisc)
-library(rstudioapi) # load it
+library(rstudioapi)
 
 # set directory to R script folder
 current_path <- getActiveDocumentContext()$path 
