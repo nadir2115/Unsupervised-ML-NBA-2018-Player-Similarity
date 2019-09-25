@@ -84,7 +84,10 @@ o=corrplot(cor(mainData),method='number')
 
 # PCA ---------------------------------------------------------------------
 
+# Finding covariance matrix from data
 res.cov <- cov(mainData);
+
+# Rounding it to decimal places
 round(res.cov,2);
 
 # Find eigenvectors
@@ -142,4 +145,4 @@ res.hc <- hclust(res.dist, method = "ward.D2" )
 fviz_dend(res.hc, k = 8, # Cut in 8 groups
           cex = 0.5, # label size
            horiz= TRUE, rect = TRUE # Add rectangle around groups
-          )
+                    )
